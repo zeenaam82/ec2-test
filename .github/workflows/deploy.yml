@@ -43,4 +43,4 @@ jobs:
           key: ${{ secrets.EC2_KEY }}
           script: |
             pkill -f 'java -jar' || true
-            nohup java -jar ~/app/target/ec2-hello-0.0.1-SNAPSHOT.jar > ~/app/nohup.out 2>&1 &
+            nohup java -jar /home/ec2-user/app/ec2-hello-0.0.1-SNAPSHOT.jar > /home/ec2-user/app/nohup.out 2>&1 &
