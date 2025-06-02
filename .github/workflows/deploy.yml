@@ -24,16 +24,17 @@ jobs:
       - name: Check jar exists
         run: ls -al target
 
-      - name: Copy jar to EC2 with scp
-        env:
-          EC2_HOST: ${{ secrets.EC2_HOST }}
-          EC2_USER: ${{ secrets.EC2_USER }}
-          EC2_KEY: ${{ secrets.EC2_KEY }}
+      - name: Prepare SSH
         run: |
-          echo "$EC2_KEY" > private_key.pem
+          echo "${{ secrets.EC2_KEY }}" > private_key.pem
           chmod 600 private_key.pem
-          scp -i private_key.pem target/ec2-hello-0.0.1-SNAPSHOT.jar $EC2_USER@$EC2_HOST:/home/ec2-user/app/
-          
+          mkdir -p ~/.ssh
+          ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Copy jar to EC2 with scp
+        run: |
+          scp -i private_key.pem target/ec2-hello-0.0.1-SNAPSHOT.jar ec2-user@${{ secrets.EC2_HOST }}:/home/ec2-user/app/
+
       - name: Run app on EC2
         uses: appleboy/ssh-action@v1.0.0
         with:
